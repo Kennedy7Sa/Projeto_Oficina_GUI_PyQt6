@@ -14,6 +14,11 @@ Este é um aplicativo simples de cadastro de costureiros desenvolvido com **Pyth
 - [PyQt6](https://pypi.org/project/PyQt6/)
 - SQLite (integrado ao Python)
 
+## Observações 
+- Ative seu ambiente virtual , usando o pawershel digite **venv\Scripts\Activate** usando o CMD **cd venv/Scripts/activate** 
+- Para criar um arquivo com a libs baixadas na seu ambiente virtual e não precisar subir tudo para o git digite no terminal pip freeze(mostra as bibliotecas instaladas) > requirements.txt, isso criara um arquivo com todas as bibliotecas no projeto .
+- Pra recriar o ambiente com o arquivo requirements , crie um o ambiente com **python -m venv venv** e depois  **pip install -r .\requirements.txt**
+
 ## 📦 Instalação
 
 ### 1. Clone este repositório
