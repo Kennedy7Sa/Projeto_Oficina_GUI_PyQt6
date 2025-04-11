@@ -5,6 +5,7 @@ def salvar_dados():
     nome = tela_cadastro.txtNome.text()
     telefone = tela_cadastro.txtTelefone.text()
     endereco = tela_cadastro.txtEndereco.text()
+    endereco = tela_cadastro.txtEndereco.text()
 
     try:
         banco = sqlite3.connect('bd_oficina.db')
