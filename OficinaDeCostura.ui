@@ -6,20 +6,23 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>275</width>
-    <height>187</height>
+    <width>523</width>
+    <height>395</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>10</x>
       <y>130</y>
-      <width>198</width>
+      <width>491</width>
       <height>23</height>
      </rect>
     </property>
@@ -27,12 +30,12 @@
      <string>Salvar</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>251</width>
+      <width>491</width>
       <height>105</height>
      </rect>
     </property>
@@ -68,6 +71,36 @@
       <widget class="QLineEdit" name="txtEndereco"/>
      </item>
     </layout>
+   </widget>
+   <widget class="QTableWidget" name="tabelaCostureiro">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>170</y>
+      <width>491</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <column>
+     <property name="text">
+      <string>Id</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>New Column</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Nome</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Endereço</string>
+     </property>
+    </column>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
