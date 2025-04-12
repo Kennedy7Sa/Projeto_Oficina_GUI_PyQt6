@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>523</width>
-    <height>395</height>
+    <height>425</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -88,12 +88,12 @@
     </column>
     <column>
      <property name="text">
-      <string>New Column</string>
+      <string>Nome</string>
      </property>
     </column>
     <column>
      <property name="text">
-      <string>Nome</string>
+      <string>Telefone</string>
      </property>
     </column>
     <column>
@@ -101,6 +101,19 @@
       <string>Endereço</string>
      </property>
     </column>
+   </widget>
+   <widget class="QPushButton" name="btnExcluir">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>370</y>
+      <width>491</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Excluir </string>
+    </property>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

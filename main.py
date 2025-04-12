@@ -24,7 +24,7 @@ def salvar_dados():
     telefone = tela_cadastro.txtTelefone.text()
     endereco = tela_cadastro.txtEndereco.text()
     endereco = tela_cadastro.txtEndereco.text()
-    listar_costureiros()
+    
 
     try:
         banco = sqlite3.connect('bd_oficina.db')
@@ -34,16 +34,47 @@ def salvar_dados():
         banco.commit()
         banco.close()
         print('Dados salvos com sucesso!')
+        listar_costureiros()
 
     except sqlite3.Error  as erro:
         print(f'Erro ao inserir os dados: {erro}')
 
+def excluir_costureiro():
+    linha = tela_cadastro.tabelaCostureiro.currentRow()  # linha selecionada
+
+    if linha == -1:
+        print("Nenhuma linha selecionada.")
+        return
+
+    # Pegando o ID da linha (coluna 0, assumindo que ID seja a primeira coluna)
+    id_item = tela_cadastro.tabelaCostureiro.item(linha, 0)
+
+    if id_item is None:
+        print("ID não encontrado.")
+        return
+
+    id = id_item.text()
+
+    try:
+        banco = sqlite3.connect('bd_oficina.db')
+        cursor = banco.cursor()
+        cursor.execute("DELETE FROM Costureiro WHERE idCostureiro=?", (id,))
+        banco.commit()
+        banco.close()
+
+        print(f"Registro com ID {id} excluído com sucesso!")
+
+        listar_costureiros()  # Atualiza a tabela na interface
+
+    except sqlite3.Error as erro:
+        print(f"Erro ao excluir o registro: {erro}")
 
 
 
 app = QtWidgets.QApplication([])
 tela_cadastro=uic.loadUi("OficinaDeCostura.ui")
 tela_cadastro.pushButton.clicked.connect(salvar_dados)
+tela_cadastro.btnExcluir.clicked.connect(excluir_costureiro)
 listar_costureiros()
 tela_cadastro.show()
 app.exec()
