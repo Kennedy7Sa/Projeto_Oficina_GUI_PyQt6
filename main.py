@@ -23,19 +23,19 @@ def salvar_dados():
     nome = tela_cadastro.txtNome.text()
     telefone = tela_cadastro.txtTelefone.text()
     endereco = tela_cadastro.txtEndereco.text()
-    endereco = tela_cadastro.txtEndereco.text()
-    
 
     try:
-        banco = sqlite3.connect('bd_oficina.db')
-        cursor = banco.cursor()
-        cursor.execute('CREATE TABLE IF NOT EXISTS Costureiro (NomeCostureiro text,TelefoneCostureiro text,Endereco text)')
-        cursor.execute("INSERT INTO COSTUREIRO (NomeCostureiro ,TelefoneCostureiro ,Endereco)VALUES (?,?,?)",(nome,telefone,endereco))
-        banco.commit()
-        banco.close()
-        print('Dados salvos com sucesso!')
-        listar_costureiros()
-
+        if nome and telefone and endereco: #validando campos 
+            banco = sqlite3.connect('bd_oficina.db')
+            cursor = banco.cursor()
+            cursor.execute('CREATE TABLE IF NOT EXISTS Costureiro (NomeCostureiro text,TelefoneCostureiro text,Endereco text)')
+            cursor.execute("INSERT INTO COSTUREIRO (NomeCostureiro ,TelefoneCostureiro ,Endereco)VALUES (?,?,?)",(nome,telefone,endereco))
+            banco.commit()
+            banco.close()
+            print('Dados salvos com sucesso!')
+            listar_costureiros()
+        else:
+            print('Preencha todos os campos ')
     except sqlite3.Error  as erro:
         print(f'Erro ao inserir os dados: {erro}')
 
