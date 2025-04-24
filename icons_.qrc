@@ -1,5 +1,5 @@
 <RCC>
   <qresource prefix="icons">
-    <file>icons/logo empresa 200px.png</file>
+    <file>icons/logo_empresa_200px.png</file>
   </qresource>
 </RCC>

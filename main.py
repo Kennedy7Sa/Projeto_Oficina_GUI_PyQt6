@@ -1,5 +1,12 @@
 from PyQt6 import uic,QtWidgets
 import sqlite3
+import icons_rc
+
+#importante não esqueça de baixar a lib do pyside6 e converter os icones 
+#com o comando pyside6-rcc nome_do_arquivo.qrc -o icons_rc.py
+ 
+
+
 
 def listar_costureiros():
     try:
@@ -69,12 +76,62 @@ def excluir_costureiro():
     except sqlite3.Error as erro:
         print(f"Erro ao excluir o registro: {erro}")
 
+def preencher_campos():
+    linha = tela_cadastro.tabelaCostureiro.currentRow()
+
+    if linha != -1:
+        tela_cadastro.txtNome.setText(tela_cadastro.tabelaCostureiro.item(linha, 1).text())
+        tela_cadastro.txtTelefone.setText(tela_cadastro.tabelaCostureiro.item(linha, 2).text())
+        tela_cadastro.txtEndereco.setText(tela_cadastro.tabelaCostureiro.item(linha, 3).text())
+
+def editar_dados():
+    linha = tela_cadastro.tabelaCostureiro.currentRow()
+
+    if linha == -1:
+        print("Nenhuma linha selecionada para edição.")
+        return
+
+    id_item = tela_cadastro.tabelaCostureiro.item(linha, 0)
+    if id_item is None:
+        print("ID não encontrado.")
+        return
+
+    id = id_item.text()
+    nome = tela_cadastro.txtNome.text()
+    telefone = tela_cadastro.txtTelefone.text()
+    endereco = tela_cadastro.txtEndereco.text()
+
+    try:
+        banco = sqlite3.connect('bd_oficina.db')
+        cursor = banco.cursor()
+        cursor.execute("""
+            UPDATE Costureiro
+            SET NomeCostureiro=?, TelefoneCostureiro=?, Endereco=?
+            WHERE idCostureiro=?
+        """, (nome, telefone, endereco, id))
+        banco.commit()
+        banco.close()
+
+        print(f"Registro com ID {id} atualizado com sucesso!")
+        listar_costureiros()
+
+    except sqlite3.Error as erro:
+        print(f"Erro ao editar o registro: {erro}")
+
+
+
+
+
 
 
 app = QtWidgets.QApplication([])
 tela_cadastro=uic.loadUi("OficinaDeCostura.ui")
 tela_cadastro.pushButton.clicked.connect(salvar_dados)
 tela_cadastro.btnExcluir.clicked.connect(excluir_costureiro)
+tela_cadastro.tabelaCostureiro.cellClicked.connect(preencher_campos)
+tela_cadastro.btnEditar.clicked.connect(editar_dados)
+
+
 listar_costureiros()
 tela_cadastro.show()
 app.exec()
