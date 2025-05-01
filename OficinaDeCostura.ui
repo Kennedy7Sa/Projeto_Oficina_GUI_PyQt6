@@ -482,7 +482,7 @@ QPushButton:hover {
        <rect>
         <x>10</x>
         <y>270</y>
-        <width>411</width>
+        <width>421</width>
         <height>211</height>
        </rect>
       </property>
@@ -492,7 +492,7 @@ QPushButton:hover {
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <widget class="QTableWidget" name="tableWidget">
+      <widget class="QTableWidget" name="tabela_producao">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -506,6 +506,9 @@ QPushButton:hover {
 gridline-color: rgb(0, 0, 0);
 selection-color: rgb(170, 170, 255);</string>
        </property>
+       <attribute name="horizontalHeaderDefaultSectionSize">
+        <number>150</number>
+       </attribute>
        <column>
         <property name="text">
          <string>ID</string>
@@ -518,12 +521,17 @@ selection-color: rgb(170, 170, 255);</string>
        </column>
        <column>
         <property name="text">
-         <string>ID COSTUREIRO </string>
+         <string>NOME COSTUREIRO </string>
         </property>
        </column>
        <column>
         <property name="text">
-         <string>ID PEÇA</string>
+         <string>PEÇA </string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>QUANTIDADE</string>
         </property>
        </column>
        <column>

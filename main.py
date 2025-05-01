@@ -166,6 +166,7 @@ def ao_mudar_aba(index):#função para acaptar a mudança de aba
     if index == 1:  # índice da tab_2
         preencher_combo_box_costureiro(tela_cadastro)
         preencher_combo_box_peca(tela_cadastro)
+        listar_producao()
 
 def salvar_producao():
     qtd_entregue = tela_cadastro.txt_qtd_entregue.text()
@@ -214,8 +215,115 @@ def salvar_producao():
     except sqlite3.Error as erro:
         print(f"Erro ao salvar produção: {erro}")
 
+
 def listar_producao():
-    ...
+    try:
+        banco = sqlite3.connect('bd_oficina.db')
+        cursor = banco.cursor()
+
+        consulta = """
+            SELECT 
+                Producao.idProducao,
+                Producao.data_entregue, 
+                Costureiro.NomeCostureiro, 
+                Pecas.NomePeca, 
+                Producao.quantidade_entregue,
+                Producao.status
+            FROM Producao
+            JOIN Costureiro ON Producao.idCostureiro = Costureiro.idCostureiro
+            JOIN Pecas ON Producao.idPeca = Pecas.idPeca
+        """
+
+        cursor.execute(consulta)
+        dados_lidos = cursor.fetchall()
+
+        tela_cadastro.tabela_producao.setRowCount(len(dados_lidos))
+        tela_cadastro.tabela_producao.setColumnCount(6)
+       
+
+        for i in range(len(dados_lidos)):
+            for j in range(6):
+                tela_cadastro.tabela_producao.setItem(i, j, QtWidgets.QTableWidgetItem(str(dados_lidos[i][j])))
+
+        banco.close()
+
+    except sqlite3.Error as erro:
+        print(f"Erro ao listar produção: {erro}")
+
+def preencher_campos_producao():
+    linha = tela_cadastro.tabela_producao.currentRow()
+    if linha == -1:
+        return
+
+    # Pegando os dados diretamente da tabela
+    data_entrega = tela_cadastro.tabela_producao.item(linha, 1).text()
+    nome_costureiro = tela_cadastro.tabela_producao.item(linha, 2).text()
+    nome_peca = tela_cadastro.tabela_producao.item(linha, 3).text()
+    qtd = tela_cadastro.tabela_producao.item(linha, 4).text()
+    status = tela_cadastro.tabela_producao.item(linha, 5).text()
+
+    tela_cadastro.txt_data_entrega.setText(data_entrega)
+    tela_cadastro.txt_qtd_entregue.setText(qtd)
+
+    # Selecionar o costureiro e a peça correta no ComboBox
+    index_costureiro = tela_cadastro.Cmb_selecionar_costureiro.findText(nome_costureiro)
+    tela_cadastro.Cmb_selecionar_costureiro.setCurrentIndex(index_costureiro)
+
+    index_peca = tela_cadastro.Cmb_selecionar_peca.findText(nome_peca)
+    tela_cadastro.Cmb_selecionar_peca.setCurrentIndex(index_peca)
+
+    # Setar o radio button correto
+    if status == "PAGO":
+        tela_cadastro.rdb_pago.setChecked(True)
+    elif status == "EM ABERTO":
+        tela_cadastro.rdb_em_eberto.setChecked(True)
+
+def editar_producao():
+    linha = tela_cadastro.tabela_producao.currentRow()
+    if linha == -1:
+        print("Selecione uma linha para editar.")
+        return
+
+    # Pegando o ID da produção (assumindo que você adicionou a coluna oculta 5 com ID)
+    id_item = tela_cadastro.tabela_producao.item(linha, 0)
+    if not id_item:
+        print("ID da produção não encontrado.")
+        return
+    id_producao = id_item.text()
+
+    qtd_entregue = tela_cadastro.txt_qtd_entregue.text()
+    data_entrega = tela_cadastro.txt_data_entrega.text()
+    id_costureiro = tela_cadastro.Cmb_selecionar_costureiro.currentData()
+    id_peca = tela_cadastro.Cmb_selecionar_peca.currentData()
+
+    if tela_cadastro.rdb_pago.isChecked():
+        status = "PAGO"
+    elif tela_cadastro.rdb_em_eberto.isChecked():
+        status = "EM ABERTO"
+    else:
+        status = None
+
+    if not (qtd_entregue and data_entrega and id_costureiro and id_peca and status):
+        print("Preencha todos os campos corretamente.")
+        return
+
+    try:
+        banco = sqlite3.connect('bd_oficina.db')
+        cursor = banco.cursor()
+
+        cursor.execute("""
+            UPDATE Producao
+            SET idCostureiro=?, idPeca=?, Quantidade_entregue=?, Data_Entregue=?, Status=?
+            WHERE idProducao=?
+        """, (id_costureiro, id_peca, qtd_entregue, data_entrega, status, id_producao))
+
+        banco.commit()
+        banco.close()
+        print("Produção atualizada com sucesso!")
+        listar_producao()
+
+    except sqlite3.Error as erro:
+        print(f"Erro ao atualizar produção: {erro}")
 
 
 
@@ -229,6 +337,9 @@ tela_cadastro.btn_salvar_producao.clicked.connect(salvar_producao)
 tela_cadastro.btnExcluir.clicked.connect(excluir_costureiro)
 tela_cadastro.tabelaCostureiro.cellClicked.connect(preencher_campos)
 tela_cadastro.btnEditar.clicked.connect(editar_dados)
+tela_cadastro.tabela_producao.cellClicked.connect(preencher_campos_producao)
+tela_cadastro.btn_editar_producao.clicked.connect(editar_producao)
+
 
 # Conectando a troca de abas
 tela_cadastro.tabWidget.currentChanged.connect(ao_mudar_aba)
@@ -236,6 +347,7 @@ tela_cadastro.tabWidget.currentChanged.connect(ao_mudar_aba)
 
 
 listar_costureiros()
+
 tela_cadastro.tabWidget.setCurrentIndex(0)  # <- Força iniciar na primeira aba
 tela_cadastro.show()
 app.exec()
