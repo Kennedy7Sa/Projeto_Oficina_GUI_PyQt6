@@ -1,4 +1,5 @@
 from PyQt6 import uic,QtWidgets
+from PySide6.QtWidgets import QMessageBox
 import sqlite3
 import icons_rc
 
@@ -6,7 +7,7 @@ import icons_rc
 #com o comando pyside6-rcc nome_do_arquivo.qrc -o icons_rc.py
  
 
-
+#parte de cadastro de costureiros 
 
 def listar_costureiros():
     try:
@@ -63,18 +64,28 @@ def excluir_costureiro():
     id = id_item.text()
 
     try:
-        banco = sqlite3.connect('bd_oficina.db')
-        cursor = banco.cursor()
-        cursor.execute("DELETE FROM Costureiro WHERE idCostureiro=?", (id,))
-        banco.commit()
-        banco.close()
+        resposta = QMessageBox.question(
+        None,
+        "Confirmar Exclusão",
+        "Tem certeza que deseja excluir este item?",
+        QMessageBox.Yes | QMessageBox.No
+    )
+        if resposta == QMessageBox.Yes:
+            banco = sqlite3.connect('bd_oficina.db')
+            cursor = banco.cursor()
+            cursor.execute("DELETE FROM Costureiro WHERE idCostureiro=?", (id,))
+            banco.commit()
+            banco.close()
 
-        print(f"Registro com ID {id} excluído com sucesso!")
+            print(f"Registro com ID {id} excluído com sucesso!")
 
-        listar_costureiros()  # Atualiza a tabela na interface
+            listar_costureiros()  # Atualiza a tabela na interface
+        else:
+            print('Exclusão cancelada ')
 
     except sqlite3.Error as erro:
         print(f"Erro ao excluir o registro: {erro}")
+
 
 def preencher_campos():
     linha = tela_cadastro.tabelaCostureiro.currentRow()
@@ -119,6 +130,93 @@ def editar_dados():
         print(f"Erro ao editar o registro: {erro}")
 
 
+#********Cadastro de produção 
+def preencher_combo_box_costureiro(tela):
+    banco = sqlite3.connect('bd_oficina.db')
+    cursor = banco.cursor() 
+
+    cursor.execute("SELECT idCostureiro, NomeCostureiro FROM Costureiro")
+    nomes = cursor.fetchall()
+
+    tela.Cmb_selecionar_costureiro.clear()
+
+    for id_costureiro, nome in nomes:
+        # Exibe o nome, mas guarda o id (útil para salvar depois)
+        tela.Cmb_selecionar_costureiro.addItem(nome, id_costureiro)
+
+    banco.close()
+
+
+def preencher_combo_box_peca(tela):
+    banco = sqlite3.connect('bd_oficina.db')
+    cursor = banco.cursor() 
+
+    cursor.execute("SELECT idPeca, NomePeca FROM Pecas")
+    nomes = cursor.fetchall()
+
+    tela.Cmb_selecionar_peca.clear()
+
+    for id_peca, nome_peca in nomes:
+        # Exibe o nome, mas guarda o id (útil para salvar depois)
+        tela.Cmb_selecionar_peca.addItem(nome_peca, id_peca)
+
+    banco.close()
+
+def ao_mudar_aba(index):#função para acaptar a mudança de aba
+    if index == 1:  # índice da tab_2
+        preencher_combo_box_costureiro(tela_cadastro)
+        preencher_combo_box_peca(tela_cadastro)
+
+def salvar_producao():
+    qtd_entregue = tela_cadastro.txt_qtd_entregue.text()
+    data_entrega = tela_cadastro.txt_data_entrega.text()
+    
+    # Pegando os dados armazenados (idCostureiro e idPeca)
+    id_costureiro = tela_cadastro.Cmb_selecionar_costureiro.currentData()
+    id_peca = tela_cadastro.Cmb_selecionar_peca.currentData()
+    
+    # Verificando qual radio button está marcado
+    if tela_cadastro.rdb_pago.isChecked():
+        status = "PAGO"
+    elif tela_cadastro.rdb_em_eberto.isChecked():
+        status = "EM ABERTO"
+    else:
+        status = None
+
+    if not (qtd_entregue and data_entrega and id_costureiro and id_peca and status):
+        print("Preencha todos os campos corretamente.")
+        return
+
+    try:
+        banco = sqlite3.connect('bd_oficina.db')
+        cursor = banco.cursor()
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS Producao (
+                idProducao INTEGER PRIMARY KEY AUTOINCREMENT,
+                idCostureiro INTEGER,
+                idPeca INTEGER,
+                QuantidadeEntregue INTEGER,
+                DataEntrega TEXT,
+                Status TEXT
+            )
+        ''')
+
+        cursor.execute('''
+            INSERT INTO Producao (idCostureiro, idPeca, Quantidade_entregue, Data_Entregue, Status)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (id_costureiro, id_peca, qtd_entregue, data_entrega, status))
+
+        banco.commit()
+        banco.close()
+        print("Produção salva com sucesso!")
+
+    except sqlite3.Error as erro:
+        print(f"Erro ao salvar produção: {erro}")
+
+def listar_producao():
+    ...
+
 
 
 
@@ -127,13 +225,17 @@ def editar_dados():
 app = QtWidgets.QApplication([])
 tela_cadastro=uic.loadUi("OficinaDeCostura.ui")
 tela_cadastro.pushButton.clicked.connect(salvar_dados)
+tela_cadastro.btn_salvar_producao.clicked.connect(salvar_producao)
 tela_cadastro.btnExcluir.clicked.connect(excluir_costureiro)
 tela_cadastro.tabelaCostureiro.cellClicked.connect(preencher_campos)
 tela_cadastro.btnEditar.clicked.connect(editar_dados)
 
+# Conectando a troca de abas
+tela_cadastro.tabWidget.currentChanged.connect(ao_mudar_aba)
+
+
 
 listar_costureiros()
+tela_cadastro.tabWidget.setCurrentIndex(0)  # <- Força iniciar na primeira aba
 tela_cadastro.show()
 app.exec()
-# def salvar_dados():
-#     nome = txtEndereco.text()

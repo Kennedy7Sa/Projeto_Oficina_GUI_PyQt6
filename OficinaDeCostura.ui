@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>743</width>
-    <height>552</height>
+    <width>756</width>
+    <height>571</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -50,7 +50,7 @@ QTabBar::tab:selected {
 </string>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="Cadastro_costureiro">
      <attribute name="title">
@@ -281,8 +281,285 @@ QPushButton:hover {
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
-      <string>Tab 2</string>
+      <string>Cadastrar produção </string>
      </attribute>
+     <widget class="QFrame" name="frame_producao">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>431</width>
+        <height>251</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLineEdit {
+    border-radius: 5px;
+    border: 1px solid #000; /* exemplo de borda preta */
+    color: rgb(255, 255, 255); /* cor do texto */
+    background-color: #333; /* opcional, só pra destacar o branco */
+}
+
+QComboBox {
+    border-radius: 5px;
+    border: 1px solid #000; /* exemplo de borda preta */
+    color: rgb(255, 255, 255); /* cor do texto */
+    background-color: #333; /* opcional, só pra destacar o branco */
+}
+QComboBox QAbstractItemView {
+    background-color: #222;  /* cor do fundo da lista */
+    color: white;            /* cor do texto da lista */
+    selection-background-color: #555;  /* cor de fundo do item selecionado */
+    selection-color: white;            /* cor do texto do item selecionado */
+    border: 1px solid #000;
+}
+
+QRadioButton{
+	color: rgb(255, 255, 255);}</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>Costureiro </string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QComboBox" name="Cmb_selecionar_costureiro">
+         <property name="styleSheet">
+          <string notr="true">alternate-background-color: rgb(255, 255, 255);</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>Selecionar peça </string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QComboBox" name="Cmb_selecionar_peca"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>Quantidade entregue </string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1" rowspan="4">
+        <widget class="QFrame" name="Frame_status">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Status </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="rdb_em_eberto">
+            <property name="text">
+             <string>EM ABERTO</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="rdb_pago">
+            <property name="text">
+             <string>PAGO</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLineEdit" name="txt_qtd_entregue">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="placeholderText">
+          <string>Digite a quantidade a ser entregue aqui</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Data da entrega </string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLineEdit" name="txt_data_entrega">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="placeholderText">
+          <string>Digite a data da entrega </string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QPushButton" name="btn_salvar_producao">
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    background-color: rgb(85, 85, 255);
+    color: rgb(255, 255, 255);
+    border-radius: 5px;
+    padding: 5px 10px;
+    border: none;
+}
+
+QPushButton:hover {
+    background-color: rgb(65, 65, 230); /* cor mais escura no hover */
+}
+</string>
+         </property>
+         <property name="text">
+          <string>Salvar</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QPushButton" name="btn_editar_producao">
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    background-color: rgb(85, 85, 255);
+    color: rgb(255, 255, 255);
+    border-radius: 5px;
+    padding: 5px 10px;
+    border: none;
+}
+
+QPushButton:hover {
+    background-color: rgb(65, 65, 230); /* cor mais escura no hover */
+}
+</string>
+         </property>
+         <property name="text">
+          <string>Editar Produção</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QFrame" name="frame_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>270</y>
+        <width>411</width>
+        <height>211</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QTableWidget" name="tableWidget">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>401</width>
+         <height>111</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 255, 255);
+gridline-color: rgb(0, 0, 0);
+selection-color: rgb(170, 170, 255);</string>
+       </property>
+       <column>
+        <property name="text">
+         <string>ID</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>DATA ENTREGUE</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>ID COSTUREIRO </string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>ID PEÇA</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>STATUS</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QPushButton" name="btn_salvar_producao_2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>150</y>
+         <width>401</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: rgb(85, 85, 255);
+    color: rgb(255, 255, 255);
+    border-radius: 5px;
+    padding: 5px 10px;
+    border: none;
+}
+
+QPushButton:hover {
+    background-color: rgb(65, 65, 230); /* cor mais escura no hover */
+}
+</string>
+       </property>
+       <property name="text">
+        <string>Excluir registro de prodção </string>
+       </property>
+      </widget>
+     </widget>
     </widget>
    </widget>
    <widget class="QLabel" name="label_4">
