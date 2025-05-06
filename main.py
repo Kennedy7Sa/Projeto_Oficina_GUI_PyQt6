@@ -1,5 +1,5 @@
 from PyQt6 import uic,QtWidgets
-from PySide6.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QMessageBox,QTableWidgetItem,QCheckBox
 import sqlite3
 import icons_rc
 
@@ -139,10 +139,12 @@ def preencher_combo_box_costureiro(tela):
     nomes = cursor.fetchall()
 
     tela.Cmb_selecionar_costureiro.clear()
+    tela.Cmb_selecionar_costureiro_pagamento.clear() #pra limpar caso tenha informação 
 
     for id_costureiro, nome in nomes:
         # Exibe o nome, mas guarda o id (útil para salvar depois)
         tela.Cmb_selecionar_costureiro.addItem(nome, id_costureiro)
+        tela.Cmb_selecionar_costureiro_pagamento.addItem(nome,id_costureiro)
 
     banco.close()
 
@@ -163,10 +165,11 @@ def preencher_combo_box_peca(tela):
     banco.close()
 
 def ao_mudar_aba(index):#função para acaptar a mudança de aba
-    if index == 1:  # índice da tab_2
+    if index == 1 or index == 2 :  # índice da tab_2
         preencher_combo_box_costureiro(tela_cadastro)
         preencher_combo_box_peca(tela_cadastro)
         listar_producao()
+    
 
 def salvar_producao():
     qtd_entregue = tela_cadastro.txt_qtd_entregue.text()
@@ -251,7 +254,7 @@ def listar_producao():
         print(f"Erro ao listar produção: {erro}")
 
 def preencher_campos_producao():
-    linha = tela_cadastro.tabela_producao.currentRow()
+    linha = tela_cadastro.tabela_producao.currentRow() #selecionar linha 
     if linha == -1:
         return
 
@@ -325,6 +328,75 @@ def editar_producao():
     except sqlite3.Error as erro:
         print(f"Erro ao atualizar produção: {erro}")
 
+# ******* parte pagamento 
+# def preencher_costureiros_pagamento(self):    
+#     query = "SELECT idCostureiro, NomeCostureiro FROM Costureiro"
+#     with sqlite3.connect('bd_oficina.db') as banco:
+#         cursor = banco.cursor()
+#         cursor.execute(query)
+#         for id_, nome in cursor.fetchall():
+#             self.Cmb_selecionar_costureiro_pagamento.addItem(nome, id_)
+    
+
+def carregar_producao_em_aberto(tela):
+    id_costureiro = tela.Cmb_selecionar_costureiro_pagamento.currentData()
+    query = """
+        SELECT Producao.idProducao, Pecas.NomePeca, Producao.Quantidade_entregue,
+               Pecas.valorPeca, (Producao.Quantidade_entregue * Pecas.valorPeca) as Total
+        FROM Producao
+        JOIN Pecas ON Producao.IdPeca = Pecas.IdPeca
+        WHERE Producao.IdCostureiro = ? AND Producao.Status = 'EM ABERTO'
+    """
+    with sqlite3.connect('bd_oficina.db') as banco:
+        cursor = banco.cursor()
+        cursor.execute(query, (id_costureiro,))
+        registros = cursor.fetchall()
+    
+    tela.tabelaProducao.setRowCount(0)
+    tela.tabelaProducao.setColumnCount(6)  # 5 dados + checkbox
+    for row_number, row_data in enumerate(registros):
+        tela.tabelaProducao.insertRow(row_number)
+        for col, data in enumerate(row_data):
+            item = QTableWidgetItem(str(data))
+            tela.tabelaProducao.setItem(row_number, col, item)
+        checkbox = QCheckBox()
+        tela.tabelaProducao.setCellWidget(row_number, len(row_data), checkbox)
+
+
+def confirmar_pagamento(tela):
+    try:
+        total_pago = 0
+        producoes_pagas = []
+
+        for i in range(tela.tabelaProducao.rowCount()):
+            checkbox = tela.tabelaProducao.cellWidget(i, 5)
+            if checkbox and checkbox.isChecked():
+                id_producao = int(tela.tabelaProducao.item(i, 0).text())
+                total = float(tela.tabelaProducao.item(i, 4).text())
+                producoes_pagas.append(id_producao)
+                total_pago += total
+
+        if not producoes_pagas:
+            QMessageBox.warning(tela, "Aviso", "Nenhum item selecionado.")
+            return
+
+        with sqlite3.connect('bd_oficina.db') as banco:
+            cursor = banco.cursor()
+            cursor.execute(
+                "INSERT INTO Pagamento (IdCostureiro, Valor_pagamento, Data_pagamento) VALUES (?, ?, CURRENT_DATE)",
+                (tela.Cmb_selecionar_costureiro_pagamento.currentData(), total_pago)
+            )
+
+            for id_producao in producoes_pagas:
+                cursor.execute("UPDATE Producao SET Status = 'PAGO' WHERE idProducao = ?", (id_producao,))
+
+            banco.commit()
+
+        QMessageBox.information(tela, "Sucesso", f"Pagamento de R$ {total_pago:.2f} registrado.")
+        carregar_producao_em_aberto(tela)  # passa a tela como argumento
+    except Exception as e:
+        QMessageBox.critical(tela, "Erro", f"Ocorreu um erro: {e}")
+
 
 
 
@@ -339,6 +411,14 @@ tela_cadastro.tabelaCostureiro.cellClicked.connect(preencher_campos)
 tela_cadastro.btnEditar.clicked.connect(editar_dados)
 tela_cadastro.tabela_producao.cellClicked.connect(preencher_campos_producao)
 tela_cadastro.btn_editar_producao.clicked.connect(editar_producao)
+
+tela_cadastro.btn_confirmar_pagamento.clicked.connect(lambda: confirmar_pagamento(tela_cadastro))
+
+tela_cadastro.Cmb_selecionar_costureiro_pagamento.currentIndexChanged.connect(
+    lambda: carregar_producao_em_aberto(tela_cadastro))
+
+
+
 
 
 # Conectando a troca de abas
